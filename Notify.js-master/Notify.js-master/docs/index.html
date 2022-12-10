@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Notify.js - Demo</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.3.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/themes/prism.min.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/eliottrobson/Notify.js/v1.0.4/notify.css">
+    <style>
+        [v-cloak] {
+            visibility: hidden;
+        }
+
+        .content {
+            overflow-x: auto;
+        }
+
+        .token.number {
+            -webkit-box-align: inherit;
+            -ms-flex-align: inherit;
+            align-items: inherit;
+            background-color: inherit;
+            border-radius: inherit;
+            display: inline;
+            font-size: inherit;
+            height: inherit;
+            -webkit-box-pack: inherit;
+            -ms-flex-pack: inherit;
+            justify-content: inherit;
+            margin-right: inherit;
+            min-width: inherit;
+            padding: 0;
+            text-align: inherit;
+            vertical-align: inherit;
+        }
+
+        pre[class*=language-] {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.2.1/vue.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/prism.min.js"></script>
+    <script src="https://cdn.rawgit.com/eliottrobson/Notify.js/v1.0.4/notify.js"></script>
+</head>
+
+<body>
+    <section class="hero is-medium is-dark is-bold">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-vcentered">
+                    <div class="column">
+                        <h1 class="title">
+                            Notify.js (1.0.4)
+                        </h1>
+                        <h2 class="subtitle">
+                            Demo
+                        </h2>
+                    </div>
+                    <div class="column is-narrow">
+                        <a href="https://github.com/eliottrobson/Notify.js" class="button is-large is-dark is-inverted">
+                            <span class="icon"><i class="fa fa-github"></i></span>
+                            <span>Download</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h1 class="title">Demo</h1>
+
+        <div id="demo" class="columns">
+            <div class="column">
+                <form @submit.prevent="create">
+                    <h2 class="subtitle">Settings</h2>
+
+                    <label class="label">Message</label>
+                    <p class="control">
+                        <input class="input" type="text" v-model="message">
+                    </p>
+
+                    <label class="label">Type</label>
+                    <p class="control">
+                        <label class="radio">
+                            <input type="radio" name="type" value="info" v-model="type">
+                            Info
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="type" value="success" v-model="type">
+                            Success
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="type" value="warning" v-model="type">
+                            Warning
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="type" value="error" v-model="type">
+                            Error
+                        </label>
+                    </p>
+
+                    <br />
+                    <h2 class="subtitle">Options</h2>
+
+                    <label class="label">Sticky</label>
+                    <p class="control">
+                        <label class="checkbox">
+                            <input type="checkbox" v-model="options.sticky">
+                            Sticky
+                        </label>
+                    </p>
+
+                    <label class="label">Lifespan</label>
+                    <p class="control">
+                        <input class="input" type="number" v-model.number="options.lifespan">
+                    </p>
+
+                    <input type="submit" class="button is-dark" value="Create">
+                </form>
+            </div>
+            <div class="column">
+                <pre v-cloak><code v-html="source"></code></pre>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        new Vue({
+            el: "#demo",
+            data: {
+                message: "My Notification",
+                type: "info",
+                options: {
+                    sticky: false,
+                    lifespan: 3000
+                }
+            },
+            computed: {
+                customSticky: function() {
+                    return this.options.sticky !== false;
+                },
+                customLifespan: function() {
+                    return this.options.lifespan !== 3000;
+                },
+                source: function() {
+                    let code = `Notify.${this.type}("${this.message}"`;
+
+                    if (this.customSticky || this.customLifespan) {
+                        code += `, {\n`;
+
+                        if (this.customSticky) {
+                            code += `    sticky: ${this.options.sticky}\n`
+                        } else if (this.customLifespan) {
+                            code += `    lifespan: ${this.options.lifespan}\n`
+                        }
+
+                        code += "}"
+                    }
+
+                    code += ");"
+
+                    return Prism.highlight(code, Prism.languages.javascript);
+                }
+            },
+            methods: {
+                create: function() {
+                    Notify[this.type](this.message, this.options);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
